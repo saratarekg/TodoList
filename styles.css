@@ -1,5 +1,5 @@
 body {
-    background: darksalmon;
+    background: #9AC8CD;
     color: #333;
     font-family: Lato, sans-serif;
     padding: 50px;
@@ -15,7 +15,7 @@ body {
 }
 .card-header{
     font-size: x-large;
-    background: #F6DCAC;
+    background: #E1F7F5;
 }
 
 ul {
@@ -66,7 +66,7 @@ label[for='new-task'] {
     margin-bottom: 20px;
 }
 input[type=text]{
-    width: 90%;
+    width: 74%;
     height: 50%;
 }
 li {
@@ -84,7 +84,7 @@ li > label {
     font-size: 18px;
     line-height: 40px;
     padding: 0 0 0 11px;
-    width: 75%;
+    width: 70%;
 }
 
 .delete {
@@ -116,9 +116,6 @@ ul li.editMode label {
 }
 
 #searchPending, #searchCompleted {
-    /*background-image: url('/css/searchicon.png'); !* Add a search icon to input *!*/
-    /*background-position: 10px 12px; !* Position the search icon *!*/
-    /*background-repeat: no-repeat; !* Do not repeat the icon image *!*/
     width: 100%;
     font-size: 16px;
     margin-top: 12px;
