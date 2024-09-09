@@ -21,7 +21,7 @@
     <input id="new-task" type="text">
     <button class="add">Add</button>
 </div>
-
+g
     <h3>Todo</h3>
             <input type="text" id="searchPending" onkeyup="search('searchPending', 'incomplete-tasks')" placeholder="Search for pending tasks..">
             <ul id="incomplete-tasks">
@@ -56,6 +56,25 @@
     </div>
 
     <script type="module" src="app.js"></script>
+
+<script>
+    function search(searchInputId, listId) {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById(searchInputId);
+        filter = input.value.toUpperCase();
+        ul = document.getElementById(listId);
+        li = ul.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+            a = li[i].querySelector("label");
+            txtValue = a.textContent || a.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+</script>
 
 </div>
 
