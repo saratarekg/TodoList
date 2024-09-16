@@ -1,0 +1,16 @@
+
+.container {
+  display: block;
+  width: 800px;
+}
+
+.card{
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.5);
+}
+.card-header{
+  font-size: x-large;
+  background: #E1F7F5;
+}
+
+
+
