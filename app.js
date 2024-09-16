@@ -1,15 +1,51 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js';
+import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.20.0/firebase-firestore.js';
 
 var taskInput=document.getElementById("new-task");
 var addButton=document.getElementsByTagName("button")[0];//first button - add
 var incompleteTaskHolder=document.getElementById("incomplete-tasks");//list of incomplete
 var completedTasksHolder=document.getElementById("completed-tasks");//list of complete
 
+const firebaseConfig = {
+    apiKey: "AIzaSyDBGKNL5SefEi9ZtBKnod8KaEwuW3z8G2A",
+    authDomain: "todolist-sara.firebaseapp.com",
+    projectId: "todolist-sara",
+};
 
-var createNewTaskElement=function(taskString){
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const loadTasks = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "todos"));
+        querySnapshot.forEach(doc => {
+            const task = doc.data();
+            console.log(task);
+            const listItem = createNewTaskElement(task.text, doc.id, task.completed);
+            if (task.completed) {
+                completedTasksHolder.appendChild(listItem);
+                bindTaskEvents(listItem, taskIncomplete);
+            } else {
+                incompleteTaskHolder.appendChild(listItem);
+                bindTaskEvents(listItem, taskCompleted);
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching tasks: ", error);
+    }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadTasks();
+});
+
+var createNewTaskElement=function(taskString, id = null, completed = false){
 
     var listItem=document.createElement("li");
     var checkBox=document.createElement("input");
     checkBox.type="checkbox";
+    checkBox.checked = completed;
+
     var label=document.createElement("label");//label
     label.innerText=taskString;
     var editInput=document.createElement("input");//text
@@ -26,34 +62,56 @@ var createNewTaskElement=function(taskString){
     listItem.appendChild(editInput);
     listItem.appendChild(editButton);
     listItem.appendChild(deleteButton);
+
+    listItem.dataset.id = id;
+
     return listItem;
 }
 
 
 
-var addTask=function(){
+var addTask=async () =>{
+    const taskText = taskInput.value;
+    if (!taskText) return;
 
-    var listItem=createNewTaskElement(taskInput.value);
-
-    incompleteTaskHolder.appendChild(listItem); //added to incomplete
-    bindTaskEvents(listItem, taskCompleted);
-
-    taskInput.value=""; //empty the text box
+    try {
+        const docRef =  await addDoc(collection(db, "todos"), {
+            text: taskText,
+            completed: false
+        });
+        var listItem = createNewTaskElement(taskText, docRef.id);
+        incompleteTaskHolder.appendChild(listItem); //added to incomplete
+        bindTaskEvents(listItem, taskCompleted);
+        taskInput.value = ""; //empty the text box
+        console.log("Task added successfully!");
+    }
+    catch (e) {
+        console.error("Error adding task: ", e);
+    }
 }
+
 addButton.onclick=addTask;
 
 
-var editTask=function(){
+var editTask=async function(){
     var listItem=this.parentNode;
+    const taskId = listItem.dataset.id;
 
     var editInput=listItem.querySelector('input[type=text]');
     var label=listItem.querySelector("label");
     var editButton = listItem.querySelector("button.edit");
     var containsClass=listItem.classList.contains("editMode");
-    //If class of the parent is .editmode
     if(containsClass){
-        label.innerText=editInput.value;
-        editButton.innerText = "Edit";
+        try {
+            const updatedText = editInput.value;
+            await updateDoc(doc(db, "todos", taskId), {text: updatedText});
+
+            label.innerText = updatedText;
+            editButton.innerText = "Edit";
+        }
+        catch (e) {
+            console.error("Error updating task: ", e);
+        }
 
     }else{
         editInput.value=label.innerText;
@@ -64,22 +122,46 @@ var editTask=function(){
 }
 
 
-var deleteTask=function(){
+var deleteTask=async function(){
     var listItem=this.parentNode;
+    const taskId = listItem.dataset.id;
+
     var ul=listItem.parentNode;
-    ul.removeChild(listItem);
+    try {
+        await deleteDoc(doc(db, "todos", taskId));
+        ul.removeChild(listItem);
+    }
+    catch (e) {
+        console.error("Error deleting task: ", e);
+    }
 }
 
-var taskCompleted=function(){
-    var listItem=this.parentNode;
-    completedTasksHolder.appendChild(listItem);
-    bindTaskEvents(listItem, taskIncomplete); //if task completed the checkbox makes it incomplete
+var taskCompleted=async function() {
+    var listItem = this.parentNode;
+    const taskId = listItem.dataset.id;
+
+    try {
+        await updateDoc(doc(db, "todos", taskId), {completed: true});
+        completedTasksHolder.appendChild(listItem);
+        bindTaskEvents(listItem, taskIncomplete); //if task completed the checkbox makes it incomplete
+    }
+    catch (e) {
+        console.log("Error updating task to completed: ", e);
+    }
 }
 
-var taskIncomplete=function(){
+var taskIncomplete=async function(){
     var listItem=this.parentNode;
-    incompleteTaskHolder.appendChild(listItem);
-    bindTaskEvents(listItem,taskCompleted);
+    const taskId = listItem.dataset.id;
+    try {
+        await updateDoc(doc(db, "todos", taskId), {completed: false});
+        incompleteTaskHolder.appendChild(listItem);
+        bindTaskEvents(listItem,taskCompleted);
+        }
+    catch (e) {
+        console.log("Error updating task to incomplete: ", e);
+    }
+
 }
 
 var bindTaskEvents=function(taskListItem,checkBoxEventHandler){
@@ -116,19 +198,3 @@ var displayDate = function() {
 };
 displayDate();
 
-function search(searchInputId, listId) {
-    var input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById(searchInputId);
-    filter = input.value.toUpperCase();
-    ul = document.getElementById(listId);
-    li = ul.getElementsByTagName("li");
-    for (i = 0; i < li.length; i++) {
-        a = li[i].querySelector("label");
-        txtValue = a.textContent || a.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            li[i].style.display = "";
-        } else {
-            li[i].style.display = "none";
-        }
-    }
-}

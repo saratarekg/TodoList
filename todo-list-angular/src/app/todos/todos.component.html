@@ -1,0 +1,40 @@
+<div>
+  <label for="new-task">Add Item</label>
+  <input id="new-task" type="text" [(ngModel)]="newTask">
+  <button class="add" (click)="addTask()" >Add</button>
+</div>
+
+<h3>Todo</h3>
+<input type="text" id="searchPending" [(ngModel)]="searchPending" placeholder="Search for pending tasks..">
+<ul id="incomplete-tasks">
+  <li *ngFor="let task of filterTasks('incomplete', searchPending)">
+    <input type="checkbox" (change)="handleCheckboxChange(task.id, $event)">
+    <label *ngIf="!task.isEditing">{{ task.text }}</label>
+    <input type="text"
+           *ngIf="task.isEditing"
+           [value]="task.text"
+           (blur)="updateTask(task.id, task.editText)"
+           [(ngModel)]="task.editText"
+    >
+    <button *ngIf="!task.isEditing" (click)="editTask(task)" class="edit">Edit</button>
+    <button *ngIf="task.isEditing" (click)="updateTask(task.id, task.editText)" class="edit">Save</button>
+    <button (click)="deleteTask(task.id)" class="delete">Delete</button>
+  </li>
+</ul>
+
+<h3>Completed</h3>
+<input type="text" id="searchCompleted" [(ngModel)]="searchCompleted" placeholder="Search for completed tasks..">
+<ul id="completed-tasks">
+  <li *ngFor="let task of filterTasks('completed', searchCompleted)">
+    <input type="checkbox" checked (change)="handleCheckboxChange(task.id, $event)">
+    <label *ngIf="!task.isEditing">{{ task.text }}</label>
+    <input type="text"
+           *ngIf="task.isEditing"
+           [value]="task.text"
+           [(ngModel)]="task.editText"
+    >
+    <button *ngIf="!task.isEditing" (click)="editTask(task)" class="edit">Edit</button>
+    <button *ngIf="task.isEditing" (click)="updateTask(task.id, task.editText)" class="edit">Save</button>
+    <button (click)="deleteTask(task.id)" class="delete">Delete</button>
+  </li>
+</ul>
