@@ -26,7 +26,7 @@ export class TodoService {
     return this.getUserId().pipe(
       switchMap(userId => {
         if (userId) {
-          const q = query(this.todosCollection, where('userID', '==', userId));
+          const q = query(this.todosCollection, where('userId', '==', userId));
           return from(getDocs(q)).pipe(
             map(snapshot =>
               snapshot.docs.map(doc => ({
