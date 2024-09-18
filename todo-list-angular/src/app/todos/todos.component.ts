@@ -42,7 +42,7 @@ export class TodosComponent implements OnInit {
     this.todoService.addTask(this.newTask).subscribe(
       () => {
         this.newTask = '';
-        this.loadTasks(); // Reload tasks to reflect changes
+        this.loadTasks();
       },
       error => {
         console.error('Error adding task: ', error);
