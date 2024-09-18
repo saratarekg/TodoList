@@ -1,19 +1,24 @@
 import {Component, OnInit} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {TodosComponent} from "./todos/todos.component";
+import {AuthComponent} from "./auth/auth.component";
+import {AuthService} from "./services/auth/auth.service";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TodosComponent],
+  imports: [RouterOutlet, TodosComponent, AuthComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
   date: string = '';
+  constructor(private authService: AuthService) {
+  }
 
   ngOnInit(): void {
     this.displayDate();
+    this.authService.autoLogin();
   }
   displayDate(): void {
     {
@@ -24,4 +29,7 @@ export class AppComponent implements OnInit {
 
   }
 
+  Logout() {
+    this.authService.logout();
+  }
 }

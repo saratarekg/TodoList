@@ -1,12 +1,16 @@
 <div class="container">
   <div class="card">
-    <div class="card-header" id="current-date" >{{ date }}</div>
+    <div class="card-header"  >
+      <div id="current-date"> {{ date }}</div>
+      <div><button type="button" (click)="Logout()">Logout</button></div>
+    </div>
     <div class="card-body">
       <blockquote class="blockquote mb-0">
         <p>"Your future is created by what you do today, not tomorrow."</p>
         <footer class="blockquote-footer">Robert T. Kiyosaki</footer>
       </blockquote>
-      <app-todos></app-todos>
+      <router-outlet></router-outlet>
+
     </div>
   </div>
 
