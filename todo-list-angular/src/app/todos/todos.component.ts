@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import {TodoService} from "../services/todo.service";
+import {TodoService} from "../services/todo/todo.service";
 import {CommonModule, NgForOf} from "@angular/common";
 
 @Component({

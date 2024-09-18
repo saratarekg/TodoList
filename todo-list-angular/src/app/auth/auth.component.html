@@ -1,0 +1,40 @@
+<form [formGroup]="authForm"  (ngSubmit)="onSubmit()">
+  <h4>
+    {{isLoginMode? 'Welcome back, please login!' : 'Join us now and sign up!'}}
+  </h4>
+
+  <mat-form-field appearance="fill">
+    <input type="email" matInput formControlName="email" email required  placeholder="Enter your email">
+    @if (authForm.controls.email.hasError('email') && !authForm.controls.email.hasError('required')) {
+      <mat-error>Please enter a valid email address</mat-error>
+    }
+    @if (authForm.controls.email.hasError('required')) {
+      <mat-error>Email is <strong>required</strong></mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <input type="password"
+           formControlName="password"
+           minlength="8"
+           required
+           placeholder="Enter your password"
+           matInput
+    >
+    @if (authForm.controls.email.hasError('minlength') && !authForm.controls.email.hasError('required')) {
+      <mat-error>Please enter a valid password</mat-error>
+    }
+    @if (authForm.controls.email.hasError('required')) {
+      <mat-error>Password is <strong>required</strong></mat-error>
+    }
+
+  </mat-form-field>
+
+  <button type="submit" [disabled]="authForm.invalid">
+    {{isLoginMode? 'Login' : 'Sign up'}}
+  </button>
+  <button type="button" (click)="onSwitchMode()">
+    {{isLoginMode? 'Switch to sign up' : 'Switch to login'}}
+  </button>
+
+</form>
