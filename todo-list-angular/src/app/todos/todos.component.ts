@@ -28,7 +28,7 @@ export class TodosComponent implements OnInit {
     this.tasksSubscription.add(
       this.todoService.getTasks().subscribe(
         tasks => {
-          this.tasks = tasks.map(task => ({ ...task, isEditing: false }));
+          this.tasks = Array.isArray(tasks) ? tasks.map(task => ({ ...task, isEditing: false })) : [];
         },
         error => {
           console.error('Error fetching tasks: ', error);
@@ -101,12 +101,6 @@ export class TodosComponent implements OnInit {
     this.toggleCompletion(taskId, isChecked);
   }
 
-  handleInputChange(taskId: string, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const updatedText = input.value;
-    this.updateTask(taskId, updatedText);
-  }
-
   filterTasks(status: 'incomplete' | 'completed', searchTerm: string) {
     return this.tasks.filter(task =>
       (status === 'incomplete' ? !task.completed : task.completed) &&
@@ -114,7 +108,4 @@ export class TodosComponent implements OnInit {
     );
   }
 
-  ngOnDestroy(): void {
-    this.tasksSubscription.unsubscribe();
-  }
 }

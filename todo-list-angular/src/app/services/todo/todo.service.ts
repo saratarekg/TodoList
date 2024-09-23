@@ -1,28 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, query, getDocs, where } from '@angular/fire/firestore';
-import { AuthService } from '../auth/auth.service'; // Adjust the path if needed
+import { AuthService } from '../auth/auth.service';
 import { Observable, from, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
+import {ErrorHandlerService} from "../errorHandling/ErrorHandlingService";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoService {
   private todosCollection;
-  // private authService.user = authService.user;
 
-  constructor(private firestore: Firestore, private authService: AuthService) {
+  constructor(private firestore: Firestore, private authService: AuthService, private errorHandler: ErrorHandlerService) {
     this.todosCollection = collection(this.firestore, 'todos');
   }
 
   private getUserId() {
     return this.authService.user.pipe(
       map(user => user ? user.id : null),
-      catchError(() => of(null))
+      catchError(error => {
+        this.errorHandler.handleError(error);
+        return of(undefined);
+      })
     );
   }
 
-  getTasks(): Observable<any[]> {
+  getTasks(){
     return this.getUserId().pipe(
       switchMap(userId => {
         if (userId) {
@@ -33,7 +36,11 @@ export class TodoService {
                 id: doc.id,
                 ...doc.data()
               }))
-            )
+            ),
+            catchError(error => {
+              this.errorHandler.handleError(error);
+              return of(undefined);
+            })
           );
         } else {
           return of([]);
@@ -48,7 +55,10 @@ export class TodoService {
         if (userId) {
           return from(addDoc(this.todosCollection, { text, completed: false, userId })).pipe(
             map(() => {}),
-            catchError(() => of(undefined))
+            catchError(error => {
+              this.errorHandler.handleError(error);
+              return of(undefined);
+            })
           );
         } else {
           return of(undefined);
@@ -66,6 +76,10 @@ export class TodoService {
         } else {
           return of(undefined);
         }
+      }),
+      catchError(error => {
+        this.errorHandler.handleError(error);
+        return of(undefined);
       })
     );
   }
@@ -79,6 +93,10 @@ export class TodoService {
         } else {
           return of(undefined);
         }
+      }),
+      catchError(error => {
+        this.errorHandler.handleError(error);
+        return of(undefined);
       })
     );
   }
@@ -92,6 +110,10 @@ export class TodoService {
         } else {
           return of(undefined);
         }
+      }),
+      catchError(error => {
+        this.errorHandler.handleError(error);
+        return of(undefined);
       })
     );
   }
